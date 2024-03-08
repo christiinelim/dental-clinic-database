@@ -1,0 +1,17 @@
+[
+    {
+        "_id": 5001,
+        "name": "scaling",
+        "amount": 500
+    }, 
+    {
+        "_id": 5002,
+        "name": "polishing",
+        "amount": 500
+    }, 
+    {
+        "_id": 5003,
+        "name": "extraction",
+        "amount": 500
+    }
+]

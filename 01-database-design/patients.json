@@ -1,0 +1,38 @@
+[
+    {
+        "_id": 2001,
+        "name": "Anna",
+        "dob": "2001-01-01",
+        "gender": "female",
+        "address": {
+            "streetName": "Yishun Ring Road",
+            "blockNumber": "666",
+            "unitNumber": "10-01",
+            "postalCode": "760666"
+        }
+    },
+    {
+        "_id": 2002,
+        "name": "Jason",
+        "dob": "2002-01-01",
+        "gender": "male",
+        "address": {
+            "streetName": "Ang Mo Kio Ave 2",
+            "blockNumber": "888",
+            "unitNumber": "10-01",
+            "postalCode": "560888"
+        }
+    },
+    {
+        "_id": 2003,
+        "name": "Paul",
+        "dob": "2003-01-01",
+        "gender": "male",
+        "address": {
+            "streetName": "Tampines East Ave 10",
+            "blockNumber": "111",
+            "unitNumber": "10-01",
+            "postalCode": "470111"
+        }
+    }
+]

@@ -1,0 +1,32 @@
+[
+    {
+        "_id": 1001,
+        "name": "Jon Wick",
+        "registrationNumber": "D21234",
+        "dob": "1980-01-01",
+        "licenseExpiryDate": "2024-12-31",
+        "gender": "male",
+        "patientId": [2001],
+        "appointmentId": [3001]
+    },
+    {
+        "_id": 1002,
+        "name": "Sherlock",
+        "registrationNumber": "D21235",
+        "dob": "1979-01-01",
+        "licenseExpiryDate": "2024-12-31",
+        "gender": "male",
+        "patientId": [2002],
+        "appointmentId": [3002]
+    },
+    {
+        "_id": 1003,
+        "name": "Jasmine",
+        "registrationNumber": "D21236",
+        "dob": "1978-01-01",
+        "licenseExpiryDate": "2024-12-31",
+        "gender": "female",
+        "patientId": [2003],
+        "appointmentId": [3003]
+    }
+]

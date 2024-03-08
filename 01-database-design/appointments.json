@@ -1,0 +1,24 @@
+[
+    {
+        "_id": 3001,
+        "dateTime": "2024-05-01 10:00",
+        "dentistId": 1001,
+        "patientId": 2001,
+        "treatmentId": [5001,5002]
+    },
+    {
+        "_id": 3002,
+        "dateTime": "2024-06-01 10:00",
+        "dentistId": 1002,
+        "patientId": 2002,
+        "clinicId": 4002,
+        "treatmentId": [5001,5002]
+    }, 
+    {
+        "_id": 3003,
+        "dateTime": "2024-07-01 10:00",
+        "dentistId": 1003,
+        "patientId": 2003,
+        "treatmentId": [5001,5002]
+    }
+]
