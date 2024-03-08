@@ -59,7 +59,7 @@ db.patients.insertMany([
 ```
 db.dentists.insertMany([
     {
-        "name": " Dr John Lim",
+        "name": "Dr John Lim",
         "registrationNumber": "D21234",
         "dob": "1980-01-01",
         "licenseExpiryDate": "2024-12-31",
