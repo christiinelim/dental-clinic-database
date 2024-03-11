@@ -11,11 +11,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const MONGO_URI = process.env.MONGO_URI;
+const DB_NAME = process.env.DB_NAME;
+
 
 async function connect (uri, dbname) {
-    const client = await MongoClient.connect(uri, {
-        useUnifiedTopology: true
-    });
+    const client = await MongoClient.connect(uri);
 
     const db = client.db(dbname);
     return db
@@ -26,15 +27,43 @@ async function connect (uri, dbname) {
 
 
 async function main () {
-    const uri = process.env.MONGO_URI;
-    const db = await connect(uri, "dental-clinic");
+    const db = await connect(MONGO_URI, DB_NAME);
 
 
     // READ
-    // ADD SEARCH HERE
-    app.get('/appointments', async (req, res) => {
+    app.get('/api/appointments', async (req, res) => {
         try {
-            const result = await db.collection("appointments").find({}).toArray();
+            const criteria = {};
+            let patientId, result;
+
+            if (req.query.name) {
+                criteria.name = {
+                    '$regex': req.query.name,
+                    '$options': 'i'
+                }
+                const queryResult = await db.collection("patients").find({
+                    "name": criteria.name
+                }, {
+                    "_id": 1
+                }).toArray();
+    
+                if (queryResult.length > 0){
+                    patientId = queryResult[0]._id;
+                } else {
+                    res.status(500);
+                    res.json({
+                        "error": "No such patient in the database"
+                    })
+                }
+            }
+
+            if (patientId){
+                result = await db.collection("appointments").find({
+                    "patientId": patientId
+                }).toArray();
+            } else {
+                result = await db.collection("appointments").find({}).toArray();
+            }
 
             res.json({
                 'result': result
@@ -49,13 +78,15 @@ async function main () {
 
 
     // CREATE
-    app.post('/appointment', async (req, res) => {
+    app.post('/api/appointment', async (req, res) => {
         try {
-            const date = req.body.date;
-            const time = req.body.time;
-            const dentist = req.body.dentist;
-            const patient = req.body.patient;
-            const treatment = req.body.treatment;
+            // const date = req.body.date;
+            // const time = req.body.time;
+            // const dentist = req.body.dentist;
+            // const patient = req.body.patient;
+            // const treatment = req.body.treatment;
+
+            const { date, time, dentist, patient, treatment } = req.body;
 
             let dentistId, patientId;
             let treatmentId = [];
@@ -210,13 +241,15 @@ async function main () {
 
 
     // UPDATE
-    app.put('/appointment/:id', async (req, res) => {
+    app.put('/api/appointment/:id', async (req, res) => {
         try {
-            const date = req.body.date;
-            const time = req.body.time;
-            const dentist = req.body.dentist;
-            const patient = req.body.patient;
-            const treatment = req.body.treatment;
+            // const date = req.body.date;
+            // const time = req.body.time;
+            // const dentist = req.body.dentist;
+            // const patient = req.body.patient;
+            // const treatment = req.body.treatment;
+
+            const { date, time, dentist, patient, treatment } = req.body;
 
             let dentistId, patientId;
             let treatmentId = [];
@@ -375,7 +408,7 @@ async function main () {
 
 
     // DELETE
-    app.delete('/appointment/:id', async (req, res) => {
+    app.delete('/api/appointment/:id', async (req, res) => {
         try {
             const result = await db.collection('appointments').deleteOne({
                 "_id": new ObjectId(req.params.id)
