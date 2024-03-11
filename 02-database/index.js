@@ -1,10 +1,13 @@
 const express = require('express');
 const cors = require('cors');
-const mongodb = require('mongodb');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
-const MongoClient = mongodb.MongoClient;
-const ObjectId = mongodb.ObjectId;
+const ObjectId = require('mongodb').ObjectId;
+
+const { connect } = require('./MongoUtil');
+const { authenticateWithJWT } = require('./middleware');
 
 const app = express();
 
@@ -15,15 +18,14 @@ const MONGO_URI = process.env.MONGO_URI;
 const DB_NAME = process.env.DB_NAME;
 
 
-async function connect (uri, dbname) {
-    const client = await MongoClient.connect(uri);
-
-    const db = client.db(dbname);
-    return db
+function generateAccessToken(id, email) {
+    return jwt.sign({
+        "user_id": id,
+        "email": email
+    }, process.env.TOKEN_SECRET, {
+        "expiresIn": "3d"
+    });
 }
-
-
-
 
 
 async function main () {
@@ -416,6 +418,73 @@ async function main () {
             })
         }
     })
+
+
+    // USERS
+    app.post('/user', async (req, res) => {
+        try {
+            const hashedPassword = await bcrypt.hash(req.body.password, 12);
+            const result = db.collection("user").insertOne({
+                "email": req.body.email,
+                "password": hashedPassword
+            });
+            res.json({
+                result
+            })
+        } catch (e) {
+            res.status(500);
+            res.json({
+                "error": e.message
+            })
+        }
+    })
+
+    // LOGIN
+    app.post('/login', async (req, res) => {
+        try {
+            const user = await db.collection('user').findOne({
+                "email": req.body.email
+            })
+
+            if (user){
+                if (await bcrypt.compare(req.body.password, user.password)){
+                    const token = generateAccessToken(user._id, user.email);
+                    res.json({
+                        'token': token
+                    })
+                } else {
+                    res.res(400);
+                    res.json({
+                        "error": "Invalid login credentials"
+                    })
+                }
+            } else {
+                res.res(400);
+                res.json({
+                    "error": "Invalid login credentials"
+                })
+            }
+        } catch (e) {
+            res.status(500);
+            res.json({
+                "error": e.message
+            })
+        }
+    })
+
+    app.get('/profile', authenticateWithJWT, async (req, res) => {
+        try {
+            res.json({
+                "message": "Success in accessing protected route",
+                'payload': req.payload
+            })
+        } catch (e) {
+            res.status(500);
+            res.json({
+                "error": e.message
+            })
+        }
+    });
 }
 
 main()
