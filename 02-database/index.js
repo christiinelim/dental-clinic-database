@@ -78,10 +78,7 @@ async function main () {
     app.post('/api/appointment', async (req, res) => {
         try {
 
-            const { date, time, dentist, patient, treatment } = req.body;
-
-            let dentistId, patientId;
-            let treatmentId = [];
+            const { date, time, dentistId, patientId, treatmentId } = req.body;
 
             // validate date
             if (!date){
@@ -122,7 +119,7 @@ async function main () {
             const dateTime = new Date(dateTimeString);
 
             // validate dentist
-            if (!dentist){
+            if (!dentistId){
                 res.status(400);
                 res.json({
                     "error": "Please input dentist in charge"
@@ -132,7 +129,7 @@ async function main () {
             } 
 
             const dentistMatch = await db.collection('dentists').find({
-                'name': dentist
+                '_id': new ObjectId(dentistId)
             }, {
                 '_id': 1,
                 'name': 1
@@ -144,12 +141,10 @@ async function main () {
                     "error": "Dentist not in database"
                 });
                 return;
-            } else {
-                dentistId = dentistMatch[0]._id;
-            }
+            } 
 
             // validate patient
-            if (!patient){
+            if (!patientId){
                 res.status(400);
                 res.json({
                     "error": "Please input patient"
@@ -159,7 +154,7 @@ async function main () {
             }
 
             const patientMatch = await db.collection('patients').find({
-                'name': patient
+                '_id': new ObjectId(patientId)
             }, {
                 '_id': 1,
                 'name': 1
@@ -171,40 +166,37 @@ async function main () {
                     "error": "Patient not in database"
                 });
                 return;
-            } else {
-                patientId = patientMatch[0]._id;
-            }
+            } 
 
             // validate treatment
-            if (!treatment || treatment.length == 0) {
+            if (!treatmentId || treatmentId.length == 0) {
                 res.status(400);
                 res.json({
                     "error": "Please input treatment"
                 });
                 return;
-            } else if (!Array.isArray(treatment)) {
+            } else if (!Array.isArray(treatmentId)) {
                 res.status(400);
                 res.json({
-                    "error": "Please treatment input must be an array"
+                    "error": "Treatment input must be an array"
                 });
                 return;
             } else {
-                for (let t of treatment) {
-                    const treatmentMatch = await db.collection('treatments').find({
-                        "treatment": t
+                const missingTreatments = [];
+                for (let t of treatmentId) {
+                    const treatmentMatch = await db.collection('treatments').findOne({
+                        "_id": new ObjectId(t)
                     }, {
                         '_id': 1,
                         "treatment": 1
-                    }).toArray();
-
-                    if (treatmentMatch.length < 1){
-                        treatmentId.push(null);
-                    } else {
-                        treatmentId.push(treatmentMatch[0]._id)
+                    });
+                    
+                    if (!treatmentMatch) {
+                        missingTreatments.push(t);
                     }
                 }
 
-                if (treatmentId.includes(null)) {
+                if (missingTreatments.length > 0) {
                     res.status(400);
                     res.json({
                         "error": "One or more treatments not found"
@@ -235,10 +227,7 @@ async function main () {
     // UPDATE
     app.put('/api/appointment/:id', async (req, res) => {
         try {
-            const { date, time, dentist, patient, treatment } = req.body;
-
-            let dentistId, patientId;
-            let treatmentId = [];
+            const { date, time, dentistId, patientId, treatmentId } = req.body;
 
             // validate date
             if (!date){
@@ -279,7 +268,7 @@ async function main () {
             const dateTime = new Date(dateTimeString);
 
             // validate dentist
-            if (!dentist){
+            if (!dentistId){
                 res.status(400);
                 res.json({
                     "error": "Please input dentist in charge"
@@ -289,7 +278,7 @@ async function main () {
             } 
 
             const dentistMatch = await db.collection('dentists').find({
-                'name': dentist
+                '_id': new ObjectId(dentistId)
             }, {
                 '_id': 1,
                 'name': 1
@@ -301,12 +290,10 @@ async function main () {
                     "error": "Dentist not in database"
                 });
                 return;
-            } else {
-                dentistId = dentistMatch[0]._id;
-            }
+            } 
 
             // validate patient
-            if (!patient){
+            if (!patientId){
                 res.status(400);
                 res.json({
                     "error": "Please input patient"
@@ -316,7 +303,7 @@ async function main () {
             }
 
             const patientMatch = await db.collection('patients').find({
-                'name': patient
+                '_id': new ObjectId(patientId)
             }, {
                 '_id': 1,
                 'name': 1
@@ -328,40 +315,37 @@ async function main () {
                     "error": "Patient not in database"
                 });
                 return;
-            } else {
-                patientId = patientMatch[0]._id;
-            }
+            } 
 
             // validate treatment
-            if (!treatment || treatment.length == 0) {
+            if (!treatmentId || treatmentId.length == 0) {
                 res.status(400);
                 res.json({
                     "error": "Please input treatment"
                 });
                 return;
-            } else if (!Array.isArray(treatment)) {
+            } else if (!Array.isArray(treatmentId)) {
                 res.status(400);
                 res.json({
-                    "error": "Please treatment input must be an array"
+                    "error": "Treatment input must be an array"
                 });
                 return;
             } else {
-                for (let t of treatment) {
-                    const treatmentMatch = await db.collection('treatments').find({
-                        "treatment": t
+                const missingTreatments = [];
+                for (let t of treatmentId) {
+                    const treatmentMatch = await db.collection('treatments').findOne({
+                        "_id": new ObjectId(t)
                     }, {
                         '_id': 1,
                         "treatment": 1
-                    }).toArray();
-
-                    if (treatmentMatch.length < 1){
-                        treatmentId.push(null);
-                    } else {
-                        treatmentId.push(treatmentMatch[0]._id)
+                    });
+                    
+                    if (!treatmentMatch) {
+                        missingTreatments.push(t);
                     }
                 }
 
-                if (treatmentId.includes(null)) {
+                if (missingTreatments.length > 0) {
                     res.status(400);
                     res.json({
                         "error": "One or more treatments not found"
