@@ -34,7 +34,7 @@ async function main () {
     app.get('/api/appointments', async (req, res) => {
         try {
             const criteria = {};
-            let patientId, result;
+            let patientId = {}
 
             if (req.query.name) {
                 criteria.name = {
@@ -48,7 +48,7 @@ async function main () {
                 }).toArray();
     
                 if (queryResult.length > 0){
-                    patientId = queryResult[0]._id;
+                    patientId["patientId"] = queryResult[0]._id;
                 } else {
                     res.status(500);
                     res.json({
@@ -57,13 +57,8 @@ async function main () {
                 }
             }
 
-            if (patientId){
-                result = await db.collection("appointments").find({
-                    "patientId": patientId
-                }).toArray();
-            } else {
-                result = await db.collection("appointments").find({}).toArray();
-            }
+            const result = await db.collection("appointments").find(patientId).toArray();
+            
 
             res.json({
                 'result': result
@@ -80,11 +75,6 @@ async function main () {
     // CREATE
     app.post('/api/appointment', async (req, res) => {
         try {
-            // const date = req.body.date;
-            // const time = req.body.time;
-            // const dentist = req.body.dentist;
-            // const patient = req.body.patient;
-            // const treatment = req.body.treatment;
 
             const { date, time, dentist, patient, treatment } = req.body;
 
@@ -243,12 +233,6 @@ async function main () {
     // UPDATE
     app.put('/api/appointment/:id', async (req, res) => {
         try {
-            // const date = req.body.date;
-            // const time = req.body.time;
-            // const dentist = req.body.dentist;
-            // const patient = req.body.patient;
-            // const treatment = req.body.treatment;
-
             const { date, time, dentist, patient, treatment } = req.body;
 
             let dentistId, patientId;
